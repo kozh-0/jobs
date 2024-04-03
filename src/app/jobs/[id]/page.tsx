@@ -16,6 +16,7 @@ export default function Page(props: { params: { id: string } }) {
       return data;
     });
   }, []);
+
   if (!data) return "Loading...";
   console.log(data);
 
