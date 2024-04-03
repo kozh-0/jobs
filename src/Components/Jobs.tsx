@@ -16,6 +16,7 @@ export default function Jobs() {
         autoFocus
         style={{ marginBottom: "20px" }}
         onKeyDown={(e) => {
+          // @ts-ignore
           const input = e.target.value;
 
           if (e.key === "Enter" && input.trim()) {
