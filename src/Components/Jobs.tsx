@@ -1,5 +1,5 @@
 "use client";
-import { Input, Card, Tag } from "antd";
+import { Input, Card, Tag, Pagination } from "antd";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { dateTransform } from "@/Helper/dateTransform";
@@ -10,8 +10,10 @@ export default function Jobs() {
   const searchParams = useSearchParams();
   const [data, setData] = useState({ data: [], loading: false });
 
-  const fetchData = async (prompt: string) => {
-    return await fetch(`https://api.hh.ru/vacancies?text="${prompt}"`).then(async (res: any) => {
+  const fetchData = async (prompt: string, page: string) => {
+    return await fetch(
+      `https://api.hh.ru/vacancies?page=${page}&per_page=50&text="${prompt}"`
+    ).then(async (res: any) => {
       const data = await res.json();
       console.log(data);
       setData({ data: data.items, loading: false });
@@ -21,8 +23,9 @@ export default function Jobs() {
 
   useEffect(() => {
     const param = searchParams.get("q");
-    if (param) {
-      fetchData(param);
+    const page = searchParams.get("page");
+    if (param && page) {
+      fetchData(param, page);
     }
   }, [router, searchParams]);
 
@@ -30,9 +33,10 @@ export default function Jobs() {
     const input = e.target.value;
 
     if (e.key === "Enter" && input.trim()) {
-      router.push(`?q=${input}`, { scroll: false });
+      const page = searchParams.get("page") ?? "0";
+      router.push(`?q=${input}&page=${page}`, { scroll: false });
       setData((p) => ({ ...p, loading: true }));
-      fetchData(input);
+      fetchData(input, page);
     }
   };
 
@@ -48,7 +52,14 @@ export default function Jobs() {
       {data.loading ? (
         "Loading..."
       ) : data.data.length ? (
-        <JobsList data={data.data} />
+        <>
+          <JobsList data={data.data} />
+          <Pagination
+            defaultCurrent={0}
+            total={50}
+            onChange={(page) => router.push(`&page=${page}`, { scroll: false })}
+          />
+        </>
       ) : (
         <h2>No Data</h2>
       )}

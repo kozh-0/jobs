@@ -1,3 +1,9 @@
+import Test from "./Test";
+
 export default function About() {
-  return <div>About</div>;
+  return (
+    <div>
+      <Test />
+    </div>
+  );
 }
